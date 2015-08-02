@@ -1,0 +1,108 @@
+package com.example.lezs.graficadorfiguras;
+import java_cup.runtime.*;
+
+parser code
+{:
+    /**Metodo al que se llama automáticamente ante algún error sintactico.*/
+    public void syntax_error(Symbol s){
+        System.out.println("Error en la Línea " + (s.right+1) +" Columna "+s.left+ ". Identificador "
+        +s.value + " no reconocido." );
+      //  errores = errores +"\n"+"Error en la Línea: " + (s.right+1) +" Columna: "+s.left+ ". Identificador: "
+      //                                      +s.value ;
+    }
+
+    /**Metodo al que se llama en el momento en que ya no es posible una recuperación de
+    errores.*/
+    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{
+        System.out.println("Error sin rec en la Línea " + (s.right+1)+ " Columna "+s.left+ ". Identificador " +
+        s.value + " no reconocido.");
+      //   errores = errores +"\n"+"Error sin recuperacion en la Línea: " + (s.right+1) +" Columna: "+s.left+ ". Identificador: "
+        //                                            +s.value ;
+    }
+:}
+
+action code
+{:
+    int contnod = 0;
+
+    Datos d = new Datos();
+
+:}
+
+terminal  graficar,
+          circulo, cuadrado, rectangulo, linea, poligono,
+          azul, rojo, verde, amarillo, naranja, morado, cafe, negro,
+          aparentesis, cparentesis, coma, por, dividido, mas, menos;
+
+terminal String numero;
+
+non terminal INICIAL, G, C, FIG, E, ECI, ECU, ERE, ELI, EPO, EXP, FIN, COLOR ;
+
+precedence left mas, menos;
+precedence left por, dividido;
+
+start with INICIAL;
+
+INICIAL ::= G;
+
+G ::= C G
+      |C ;
+
+C ::= graficar {: d.Lista.add(new NodoValores('0', 0,0,0,0,0,'0')); :} FIG ;
+
+
+E ::= E:e1 mas E:e2
+            {: float uno = Float.parseFloat(String.valueOf(e1));
+               float dos = Float.parseFloat(String.valueOf(e2));
+               RESULT = uno + dos; :}
+    | E:e1 menos E:e2
+            {: float uno = Float.parseFloat(String.valueOf(e1));
+               float dos = Float.parseFloat(String.valueOf(e2));
+               RESULT = uno - dos; :}
+    | E:e1 por E:e2
+             {: float uno = Float.parseFloat(String.valueOf(e1));
+                float dos = Float.parseFloat(String.valueOf(e2));
+                RESULT = uno * dos; :}
+    | E:e1 dividido E:e2
+             {: float uno = Float.parseFloat(String.valueOf(e1));
+                float dos = Float.parseFloat(String.valueOf(e2));
+                RESULT = uno / dos; :}
+    | aparentesis E:n cparentesis {: RESULT = n; :}
+    | numero:n {: RESULT = n; :} ;
+
+
+FIG ::= ECI
+      | ECU
+      | ERE
+      | ELI
+      | EPO ;
+
+EXP ::= aparentesis E:a coma E:b coma E:c coma
+        {: d.Lista.get(contnod).setValx(Float.parseFloat(String.valueOf(a)));
+           d.Lista.get(contnod).setValy(Float.parseFloat(String.valueOf(b)));
+           d.Lista.get(contnod).setVal1(Float.parseFloat(String.valueOf(c))); :};
+
+COLOR ::= azul      {: d.Lista.get(contnod).setColor('z'); :}
+        | rojo      {: d.Lista.get(contnod).setColor('r'); :}
+        | verde     {: d.Lista.get(contnod).setColor('v'); :}
+        | amarillo  {: d.Lista.get(contnod).setColor('a'); :}
+        | naranja   {: d.Lista.get(contnod).setColor('o'); :}
+        | morado    {: d.Lista.get(contnod).setColor('m'); :}
+        | cafe      {: d.Lista.get(contnod).setColor('c'); :}
+        | negro     {: d.Lista.get(contnod).setColor('n'); :} ;
+
+FIN ::= COLOR cparentesis {: contnod++; :};
+
+ECI ::= circulo {: d.Lista.get(contnod).setTipo('c'); :} EXP FIN;
+
+ECU ::= cuadrado {: d.Lista.get(contnod).setTipo('u'); :} EXP FIN ;
+
+ERE ::= rectangulo {: d.Lista.get(contnod).setTipo('r'); :} EXP E:v
+                   {: d.Lista.get(contnod).setVal2(Float.parseFloat(String.valueOf(v))); :} coma FIN ;
+
+ELI ::= linea {: d.Lista.get(contnod).setTipo('l'); :} EXP E:v
+              {: d.Lista.get(contnod).setVal2(Float.parseFloat(String.valueOf(v))); :}  coma FIN ;
+
+EPO ::= poligono {: d.Lista.get(contnod).setTipo('p'); :} EXP E:v2 coma E:v3
+                 {: d.Lista.get(contnod).setVal2(Float.parseFloat(String.valueOf(v2)));
+                 d.Lista.get(contnod).setVal3(Float.parseFloat(String.valueOf(v3)));:} coma FIN ;
