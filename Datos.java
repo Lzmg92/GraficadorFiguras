@@ -9,5 +9,10 @@ public class Datos {
 
     public static LinkedList<NodoValores> Lista = new LinkedList<NodoValores>();
 
+    public static String errores = "--\n";
+
     public Datos(){ }
+
+
+
 }

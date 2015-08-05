@@ -14,7 +14,7 @@ public class Valores extends ActionBarActivity {
 
     Button btnok;
     Datos d = new Datos();
-    TextView txtval ;
+    TextView txtval, txter ;
     String res;
     double hola;
 
@@ -24,6 +24,7 @@ public class Valores extends ActionBarActivity {
         setContentView(R.layout.activity_valores);
 
          txtval= (TextView)findViewById(R.id.txtval);
+         txter = (TextView)findViewById(R.id.txter);
 
         res = "Cantidad de figuras: "+(String.valueOf(d.Lista.size()))+ "\n";
 
@@ -35,6 +36,7 @@ public class Valores extends ActionBarActivity {
         }
 
         txtval.setText(res);
+        txter.setText(d.errores);
 
         btnok = (Button)findViewById(R.id.btnok);
         btnok.setOnClickListener(new View.OnClickListener() {
@@ -42,6 +44,7 @@ public class Valores extends ActionBarActivity {
 
                 Intent intent = new Intent(Valores.this, Resultado.class);
                 startActivity(intent);
+                d.errores = "--\n";
             }
         });
 

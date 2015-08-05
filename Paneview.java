@@ -84,11 +84,13 @@ public class Paneview extends View {
                 case 'p':
                     vx = d.Lista.get(i).getValx();
                     vy = d.Lista.get(i).getValy();
-                    rad = d.Lista.get(i).getVal2() / 2;
+                    al = d.Lista.get(i).getVal2() / 2;
+                    an = d.Lista.get(i).getVal1() / 2;
+                    float dif = an - al;
                     int numlad = (int) d.Lista.get(i).getVal3();
                     float ang = (float) ((2*Math.PI)/numlad);
 
-                    llenar(numlad, rad, ang, vx, vy);
+                    llenar(numlad, al, ang, vx, vy, dif);
                     canvas.drawPath(wallpath, paint);
                     break;
             }
@@ -97,18 +99,33 @@ public class Paneview extends View {
 
     }
 
-    public void llenar(int tam, float rad, float ang, float x, float y){
+
+
+    public void llenar(int tam, float rad, float ang, float x, float y, float dif){
 
         float x2[] = new float[tam];
         float y2[] = new float[tam];
 
         for(int j = 0; j<tam; j++ ){
-            x2[j] = (float) ((rad * Math.cos((ang)*j))+x);
-            y2[j] = (float) (y-(rad * Math.sin(ang*j)));
+
+            float angulo = ang*j;
+
+            if(angulo > 1.6707  && angulo < 4.6123 ){
+                x2[j] = (float) (rad * Math.cos(angulo)+x-dif);
+            }
+            else if(angulo < 1.4707 && angulo >=0 || angulo > 4.8123 && angulo < 6.2831){
+                x2[j] = (float) (rad * Math.cos(angulo)+x+dif);
+            }else{
+                x2[j] = (float) (rad * Math.cos(angulo)+x);
+            }
+
+            y2[j] = (float) (y-(rad * Math.sin(angulo)));
         }
+
         wallpath.reset();
         for(int j = 0; j<tam; j++ ){wallpath.lineTo(x2[j], y2[j]);}
         wallpath.lineTo(x2[0], y2[0]);
+
     }
 
 }
